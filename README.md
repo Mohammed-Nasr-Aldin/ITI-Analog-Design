@@ -131,7 +131,7 @@ The content was built from several sources: **Razavi**, **Johns & Martin**, **Se
       <td align="center">The animated SVG banner</td>
     </tr>
     <tr>
-      <td align="center">🏅 <a href="certificate/"><code>certificate/</code></a></td>
+      <td align="center">🏅 <a href="certificate"><code>certificate/</code></a></td>
       <td align="center">ITI completion certificate</td>
     </tr>
   </tbody>
@@ -840,7 +840,6 @@ Reach out for collaborations, discussions, or opportunities. 🤝
   <tr>
     <td align="center" width="120">
       <a href="https://github.com/Mohammed-Nasr-Aldin">
-        <img src="https://cdn.simpleicons.org/github/181717#gh-light-mode-only" alt="GitHub" width="44" height="44">
         <img src="https://cdn.simpleicons.org/github/FFFFFF#gh-dark-mode-only" alt="GitHub" width="44" height="44">
         <br><sub><b>GitHub</b></sub>
       </a>
