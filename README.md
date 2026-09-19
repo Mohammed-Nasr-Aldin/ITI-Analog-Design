@@ -1,4 +1,4 @@
-![Signal Animation](signal-banner.svg)
+![Signal Animation](signal-animation/signal-banner.svg)
 
 # ITI CMOS Analog IC Design Portfolio
 
