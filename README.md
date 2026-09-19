@@ -738,13 +738,17 @@ Rules of thumb used throughout the reports:
 
 ## <a id="tools-and-technologies"></a>🧰 Tools and technologies
 
-<table align="center">
+<!-- <table align="center">
   <tr>
     <td align="center" bgcolor="#FFFFFF" width="200"><img src="logos/ITI-logo.png" alt="ITI" height="64"></td>
     <td align="center" bgcolor="#FFFFFF" width="200"><img src="logos/cadence-logo.png" alt="Cadence" height="64"></td>
     <td align="center" bgcolor="#FFFFFF" width="200"><img src="logos/ADT-logo.png" alt="ADT" height="64"></td>
   </tr>
-</table>
+</table> -->
+
+<p align="center">
+  <img src="logos/tools-logos.svg" alt="ITI, Cadence and ADT" width="700">
+</p>
 
 <table align="center">
   <thead>
