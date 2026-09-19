@@ -19,6 +19,10 @@
 
 <p align="center"><sub><i>Left of the scan line is the cleaned output, right of it is the raw input. That is the whole job of an analog designer: keep the signal, fight the noise, mismatch, and variation. <a href="signal-animation/">How the banner works</a>.</i></sub></p>
 
+## 🔗 Live site
+
+**[Mohammed Nasr · ITI Analog IC Design](https://mohammed-nasr-aldin.github.io/ITI-Analog-Design)**
+
 ---
 
 ## 📑 Table of contents
@@ -807,8 +811,8 @@ Rules of thumb used throughout the reports:
 - 📘 B. Razavi, *Design of Analog CMOS Integrated Circuits*.
 - 📗 D. Johns and K. Martin, *Analog Integrated Circuit Design* (2012). Used for the CD-buffer compensation network (Section 4.4) and the noise assignment (Example 9.10, Section 9.4.1).
 - 📙 A. Sedra and K. Smith, *Microelectronic Circuits*.
-- 📄 R. Hogervorst, J. Tero, R. Eschauzier, and J. Huisingh, "Rail-to-Rail Input/Output Operational Amplifier for VLSI Cell Libraries," *IEEE Journal of Solid-State Circuits*, Dec. 1994. Copy in [`design-challenges/op-amp/paper/`](design-challenges/op-amp/paper/hogervorst1994.pdf).
-- 📄 H. Omran, "Optimum Split Ratio for Folded Cascode OTA Bias Current: A Qualitative and Quantitative Study," *Designs*, 2019. Copy in [`projects/project2/paper/`](projects/project2/paper/folded_current_split.pdf).
+- 📄 R. Hogervorst, J. Tero, R. Eschauzier, and J. Huisingh, "Rail-to-Rail Input/Output Operational Amplifier for VLSI Cell Libraries," *IEEE Journal of Solid-State Circuits*, Dec. 1994. Copy in [`Rail-to-Rail Operational Amplifier`](design-challenges/op-amp/paper/hogervorst1994.pdf).
+- 📄 H. Omran, "Optimum Split Ratio for Folded Cascode OTA Bias Current: A Qualitative and Quantitative Study," *Designs*, 2019. Copy in [`Folded Current Splitting-ratio`](projects/project2/paper/folded_current_split.pdf).
 
 [⬆️ Back to top](#readme)
 
