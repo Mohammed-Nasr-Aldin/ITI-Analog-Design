@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="signal-animation/signal-banner.svg" alt="Animated signal banner: a scan line sweeps across a noisy raw signal and turns it into a clean output" width="100%">
-</p>
-
 <h1 align="center">CMOS Analog IC Design · ITI</h1>
 
 <p align="center">
@@ -15,6 +11,10 @@
   <img alt="Sizing" src="https://img.shields.io/badge/Sizing-ADT-2A55E5?style=flat-square">
   <img alt="Method" src="https://img.shields.io/badge/Method-gm%2FID-2A55E5?style=flat-square">
   <img alt="Program" src="https://img.shields.io/badge/Program-ITI%20Summer%20Training-C8102E?style=flat-square">
+</p>
+
+<p align="center">
+  <img src="signal-animation/signal-banner.svg" alt="Animated signal banner: a scan line sweeps across a noisy raw signal and turns it into a clean output" width="100%">
 </p>
 
 <p align="center"><sub><i>Left of the scan line is the cleaned output, right of it is the raw input. That is the whole job of an analog designer: keep the signal, fight the noise, mismatch, and variation. <a href="signal-animation/">How the banner works</a>.</i></sub></p>
@@ -46,10 +46,10 @@ This repository is my complete record of the **Analog IC Design (CMOS Technology
 
 What is inside:
 
-- 🧪 **11 labs** (Lab 00 to Lab 10), each written up as a PDF report with hand calculations compared against simulation.
+- 🧪 **11 labs**, each written up as a PDF report with hand calculations compared against simulation.
 - 🛠️ **2 mini projects** (Lab 09 and Lab 11): a two-stage Miller OTA and a fully differential folded-cascode OTA.
 - 🏆 **2 design challenges**: a full-custom rail-to-rail op-amp in 65 nm and a bandgap reference (BGR).
-- 🔊 **1 noise assignment** (Johns & Martin, Example 9.10).
+- 🔊 **noise assignment** (Johns & Martin, Example 9.10).
 - 📄 **2 papers** used as design references, plus screenshots, Monte Carlo data, and the certificate.
 
 The content was built from several sources: **Razavi**, **Johns & Martin**, **Sedra & Smith**, the course lectures, and the papers listed in [References](#references).
@@ -111,27 +111,27 @@ The content was built from several sources: **Razavi**, **Johns & Martin**, **Se
   </thead>
   <tbody>
     <tr>
-      <td align="center">🧪 <a href="ITI-Labs/"><code>ITI-Labs/</code></a></td>
+      <td align="center">🧪 <a href="ITI-Labs/"><code>ITI-Labs</code></a></td>
       <td align="center">Lab reports 00 to 08 and 10, plus the Lab 05 Monte Carlo results</td>
     </tr>
     <tr>
-      <td align="center">🛠️ <a href="projects/"><code>projects/</code></a></td>
+      <td align="center">🛠️ <a href="projects/"><code>projects</code></a></td>
       <td align="center">The two mini projects with reports, figures, and the paper for Project 2</td>
     </tr>
     <tr>
-      <td align="center">🏆 <a href="design-challenges/"><code>design-challenges/</code></a></td>
+      <td align="center">🏆 <a href="design-challenges/"><code>design-challenges</code></a></td>
       <td align="center">The op-amp and BGR challenges with reports, figures, and the op-amp paper</td>
     </tr>
     <tr>
-      <td align="center">🔊 <a href="noise-assignment/"><code>noise-assignment/</code></a></td>
+      <td align="center">🔊 <a href="noise-assignment/"><code>noise-assignment</code></a></td>
       <td align="center">Hand noise analysis of a low-pass filter around an op-amp</td>
     </tr>
     <tr>
-      <td align="center">📡 <a href="signal-animation/"><code>signal-animation/</code></a></td>
+      <td align="center">📡 <a href="signal-animation/"><code>signal-animation</code></a></td>
       <td align="center">The animated SVG banner</td>
     </tr>
     <tr>
-      <td align="center">🏅 <a href="certificate"><code>certificate/</code></a></td>
+      <td align="center">🏅 <a href="certificate/"><code>certificate</code></a></td>
       <td align="center">ITI completion certificate</td>
     </tr>
   </tbody>
