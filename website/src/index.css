@@ -322,7 +322,7 @@ main { animation: fade .4s ease both; }
 .nav__repo { margin-left: auto; color: #fff; text-decoration: none; font-weight: 700; font-size: .85rem; border: 2px solid rgba(255,255,255,.5); padding: 6px 12px; transition: background .2s, color .2s; }
 .nav__repo:hover { background: #fff; color: var(--navy); }
 .nav__repo + .nav__contact { margin-left: 0; }
-.intro__repo { display: none; margin-top: 18px; }
+.intro__repo { display: inline-flex; margin-top: 18px; }
 @media (max-width: 960px) {
   .nav__repo { display: none; }
   .intro__repo { display: inline-flex; }
