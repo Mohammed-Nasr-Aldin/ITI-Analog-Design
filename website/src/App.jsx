@@ -8,6 +8,10 @@ const ASSET_URLS = import.meta.glob(
 );
 const A = (p) => ASSET_URLS['../../' + p] || '';
 
+/* ===================== REPO ===================== */
+
+const REPO = 'https://github.com/Mohammed-Nasr-Aldin/ITI-Analog-Design';
+
 /* ===================== DATA ===================== */
 
 const CONTACTS = [
@@ -41,39 +45,39 @@ const CATS = {
 };
 
 const LAB_TECH = 'GF180 · 180 nm · VDD 1.8 V';
-const V = ['Cadence Virtuoso'];
-const XSCHEM = ['xschem + ngspice'];
+const XS = ['xschem + ngspice', 'Spice Station'];
+const CV = ['Cadence Virtuoso (ADE)'];
 
-// NOTE: `sim` and `an` (analyses) are my reading of the README. Fix any that differ.
+// Tools were checked against the lab reports: Labs 00-07 = xschem + ngspice, Labs 08 and 10 = Cadence Virtuoso.
 const LABS = [
-  { id: '00', cat: 'passive', title: 'RLC circuits', sim: V, an: ['AC', 'Transient', 'Parametric sweep'],
+  { id: '00', cat: 'passive', title: 'RLC circuits', sim: XS, tech: 'None (passive RLC)', size: 'None (passive circuit)', kw: 'rlc resonance impedance q factor bandwidth damping', an: ['AC', 'Transient', 'Parametric sweep'],
     blurb: 'Parallel and series RLC: impedance, resonance, Q, bandwidth, R sweeps and step-response damping.',
     stats: [['f0', '5.03 GHz hand · 5.018 GHz sim'], ['Q', '31.6 hand · 30.1 / 30.8 sim']] },
-  { id: '01', cat: 'single', title: 'LPF and MOSFET characteristics', sim: V, an: ['Transient', 'AC', 'DC sweep'],
+  { id: '01', cat: 'single', title: 'LPF and MOSFET characteristics', sim: XS, size: 'None (device characterization)', kw: 'lpf rc low pass filter mosfet characteristics long channel short channel velocity saturation', an: ['Transient', 'AC', 'DC sweep'],
     blurb: 'RC low-pass filter, then long channel (30 µm / 2 µm) against short channel (3 µm / 200 nm): ID-VGS, gm-VGS, ID-VDS, velocity saturation, channel-length modulation.',
     stats: [['Rise time', '1.104 ns vs 1.1 ns'], ['f-3dB', '317.6 vs 318.3 MHz'], ['NMOS/PMOS current ratio', '3.85 long · 2.48 short']] },
-  { id: '02', cat: 'single', title: 'Common-source amplifier', sim: V, an: ['DC', 'AC', 'Transient'],
+  { id: '02', cat: 'single', title: 'Common-source amplifier', sim: XS, kw: 'cs common source amplifier gain linearization', an: ['DC', 'AC', 'Transient'],
     blurb: 'Sizing chart for Av = −8 at 100 µA, gain non-linearity and its linearization with feedback, PMOS load.',
     stats: [['Sizing', 'W 34.5 µm · L 2 µm · RD 9 kΩ'], ['Gain', '−7.68 sim vs −8'], ['Linear input range', '0.208 V vs 0.21 V']] },
-  { id: '03', cat: 'single', title: 'Cascode amplifier', sim: V, an: ['AC', 'Transient'],
+  { id: '03', cat: 'single', title: 'Cascode amplifier', sim: XS, kw: 'cascode amplifier gain bandwidth miller', an: ['AC', 'Transient'],
     blurb: 'gm·ro = 80 at 50 µA (L = 350 nm, W = 3.57 µm). Cascode used once for gain and once for bandwidth.',
     stats: [['Gain', '2111 (66.5 dB) vs 72 CS'], ['Bandwidth', '35.9 kHz vs 1.09 MHz'], ['Miller-reduced BW', '3 vs 1.69 MHz']] },
-  { id: '04', cat: 'single', title: 'Common-drain buffer', sim: XSCHEM, an: ['AC', 'Transient', 'Zout'],
+  { id: '04', cat: 'single', title: 'Common-drain buffer', sim: XS, kw: 'cd common drain source follower buffer compensation', an: ['AC', 'Transient', 'Zout'],
     blurb: 'ID = 10 µA, gm/ID = 10, L = 1 µm, W = 19.36 µm. Ringing fixed with a load cap, then the C1-R2-C2 network from Johns and Martin.',
     stats: [['Overshoot', '49.6 % at Q ≈ 2.3'], ['After compensation', 'no ringing, no overshoot']] },
-  { id: '05', cat: 'mirror', title: 'Current mirrors', sim: XSCHEM, an: ['DC', 'Monte Carlo (200 runs)'],
+  { id: '05', cat: 'mirror', title: 'Current mirrors', sim: XS, kw: 'current mirror mismatch monte carlo wide swing cascode', an: ['DC', 'Monte Carlo (200 runs)'],
     blurb: 'Mismatch below 2 % and λ below 0.1 V⁻¹ (V* = 150 mV, L = 1.42 µm, W = 14.6 µm, m = 2). Simple, wide-swing and cascode mirrors.',
     stats: [['Rout', '1.585 MΩ vs 216 MΩ'], ['Compliance', '0.15 V vs 0.25 V'], ['ΔIout', '2.27 / 2.24 / 0.016 %'], ['Monte Carlo', '1.93 % vs 1.87 %']] },
-  { id: '06', cat: 'mirror', title: 'Differential amplifier', sim: XSCHEM, an: ['DC', 'AC', 'CMIR'],
+  { id: '06', cat: 'mirror', title: 'Differential amplifier', sim: XS, kw: 'differential pair amplifier cmrr cmir', an: ['DC', 'AC', 'CMIR'],
     blurb: 'PMOS input pair, ISS = 40 µA, RD = 30 kΩ. Simple against wide-swing mirror load.',
     stats: [['Avd', '7.81 vs 8 hand'], ['BW', '5.7 MHz'], ['|Avcm|', '0.039'], ['CMIR', '1.19 V simple · 1.14 V wide-swing']] },
-  { id: '07', cat: 'ota', title: 'Five-transistor OTA', sim: XSCHEM, an: ['OP', 'AC', 'Loop gain', 'CMIR'],
+  { id: '07', cat: 'ota', title: 'Five-transistor OTA', sim: XS, kw: '5t five transistor ota cmrr gbw', an: ['OP', 'AC', 'Loop gain', 'CMIR'],
     blurb: 'NMOS input pair, gm/ID sizing, minimum area read from an Area × ID plot.',
     stats: [['Avd', '34.25 dB'], ['CMRR', '74.2 dB'], ['GBW', '5 MHz at 5 pF'], ['Area · current', '11.8 µm² · 35.25 µA'], ['Phase margin', '89°']] },
-  { id: '08', cat: 'ota', title: 'Negative feedback', sim: V, an: ['AC', 'Loop gain', 'Temperature sweep'],
+  { id: '08', cat: 'ota', title: 'Negative feedback', sim: CV, size: 'Reuses the Lab 07 OTA', kw: 'negative feedback closed loop loop gain desensitization temperature', an: ['AC', 'Loop gain', 'Temperature sweep'],
     blurb: 'Behavioral against real OTA with CIN = 4 pF and 12 pF. Gain desensitization over temperature.',
     stats: [['Closed-loop gain', '5.68 / 11.37 dB'], ['BW', '2.65 / 1.37 MHz'], ['Drift over temp', '0.73 % vs 16.6 % loop gain']] },
-  { id: '10', cat: 'noise', title: 'Noise simulation', sim: V, an: ['Noise', 'Transient noise'],
+  { id: '10', cat: 'noise', title: 'Noise simulation', sim: CV, size: 'RC + five-transistor OTA', kw: 'noise thermal flicker kt c transient noise', an: ['Noise', 'Transient noise'],
     blurb: 'kT/C on an RC low-pass, then input-referred noise and flicker corner of the five-transistor OTA.',
     stats: [['RC low-pass', '4.07 nV/√Hz · 64.3 µVrms'], ['5T OTA', '15.15 vs 14.83 nV/√Hz'], ['Flicker corner', '≈ 1.65 MHz']] },
 ];
@@ -99,7 +103,7 @@ const PROJECTS = [
     table: { cols: ['Hand', 'Simulation'], rows: [
       { m: 'DC gain (dB)', a: 70.24, b: 73.43 }, { m: 'GBW (MHz)', a: 5.97, b: 5.52 },
       { m: 'CMRR (dB)', a: 74, b: 74.3 }, { m: 'Phase margin (°)', a: 73, b: 73.12 },
-      { m: 'Slew rate, Cc = 1.665 pF (V/µs)', a: 6, b: 5 }, { m: 'CMIR (V)', a: '0.19 to 0.8', b: '0.1 to 0.8' },
+      { m: 'SR, Cc = 1.665 pF (V/µs)', a: 6, b: 5 }, { m: 'CMIR (V)', a: '0.19 to 0.8', b: '0.1 to 0.8' },
     ] },
     notes: [
       'Gain split Av1 = 65, Av2 = 55. Stage 1 gets more gain because stage-2 noise is divided by it at the input.',
@@ -155,7 +159,7 @@ const CHALLENGES = [
     table: { cols: ['Shared', 'Independent'], rows: [
       { m: 'Compensation CM (pF)', a: 1.4, b: 0.7 }, { m: 'Aol, TT (dB)', a: 65.78, b: 80.64 },
       { m: 'GBW, TT (MHz)', a: 10.67, b: 13.28 }, { m: 'Phase margin, TT (°)', a: 60.39, b: 64.31 },
-      { m: 'Cost', a: '367.95 µm²', b: 'more area and current' },
+      { m: 'Area', a: '367.95 µm²', b: 'Larger' },
     ] },
     notes: [
       'Sharing one cascode mirror saves area and power. Independent branches hold up better across corners.',
@@ -201,14 +205,16 @@ const Ov = createContext(null);
 const useOverlay = () => useContext(Ov);
 
 function OverlayProvider({ children }) {
+  const [pdf, setPdf] = useState(null);
   const [img, setImg] = useState(null);
   useEffect(() => {
-    const k = (e) => { if (e.key === 'Escape') setImg(null); };
+    const k = (e) => { if (e.key === 'Escape') { setPdf(null); setImg(null); } };
     window.addEventListener('keydown', k);
     return () => window.removeEventListener('keydown', k);
   }, []);
-  useEffect(() => { document.body.style.overflow = img ? 'hidden' : ''; }, [img]);
+  useEffect(() => { document.body.style.overflow = pdf || img ? 'hidden' : ''; }, [pdf, img]);
   const value = useMemo(() => ({
+    openPdf: (src, title) => setPdf({ src, title }),
     openImg: (src, alt) => setImg({ src, alt }),
   }), []);
   return (
@@ -220,6 +226,17 @@ function OverlayProvider({ children }) {
           <button className="veil__x" onClick={() => setImg(null)}>Close</button>
         </div>
       )}
+      {pdf && (
+        <div className="veil veil--pdf" role="dialog" aria-modal="true">
+          <div className="pdfbar">
+            <b>{pdf.title}</b>
+            <a href={pdf.src} target="_blank" rel="noreferrer">Open in new tab</a>
+            <a href={pdf.src} download>Download</a>
+            <button onClick={() => setPdf(null)}>Close</button>
+          </div>
+          <iframe title={pdf.title} src={pdf.src} />
+        </div>
+      )}
     </Ov.Provider>
   );
 }
@@ -227,7 +244,7 @@ function OverlayProvider({ children }) {
 function PdfButtons({ file, name, label = 'PDF', quiet }) {
   return (
     <div className={`btns ${quiet ? 'btns--quiet' : ''}`}>
-      <a className="btn btn--solid" href={file} target="_blank" rel="noreferrer" aria-label={`View ${name}`}>View {label}</a>
+      <a className="btn btn--solid" href={file} target="_blank" rel="noreferrer" title={name}>View {label}</a>
       <a className="btn" href={file} download>Download {label}</a>
     </div>
   );
@@ -269,6 +286,12 @@ function Tabs({ items, value, onChange, variant = 'inline', label }) {
     if (el) setInd({ l: el.offsetLeft, w: el.offsetWidth });
   }, []);
   useLayoutEffect(() => { measure(); }, [value, items, measure]);
+    useEffect(() => {
+    const box = wrap.current;
+    const el = box?.querySelector('[aria-selected="true"]');
+    if (!box || !el) return;
+    box.scrollTo({ left: el.offsetLeft - (box.clientWidth - el.offsetWidth) / 2, behavior: 'smooth' });
+  }, [value]);
   useEffect(() => {
     window.addEventListener('resize', measure);
     document.fonts?.ready.then(measure);
@@ -436,30 +459,34 @@ function Scope({ mode }) {
 
 /* --------------------------- gm/ID explorer (about) --------------------------- */
 function GmId() {
-  const [x, setX] = useState(0);            // log10(IC)
+  const [g, setG] = useState(18);            // gm/ID sits on the x axis
   const n = 1.3, Vt = .02585, k = 1 / (n * Vt);
-  const f = (lx) => k / (.5 + Math.sqrt(.25 + Math.pow(10, lx)));
-  const W = 460, H = 250, L = 38, R = 12, Tp = 14, B = 34;
-  const px = (lx) => L + ((lx + 2) / 4) * (W - L - R);
-  const py = (v) => Tp + (1 - v / 30) * (H - Tp - B);
-  const d = useMemo(() => { let s = ''; for (let lx = -2; lx <= 2.001; lx += .05) s += `${s ? 'L' : 'M'}${px(lx).toFixed(1)} ${py(f(lx)).toFixed(1)}`; return s; }, []);
-  const g = f(x), ic = Math.pow(10, x);
+  const gmid = (lx) => k / (.5 + Math.sqrt(.25 + Math.pow(10, lx)));
+  const icOf = (v) => Math.pow(k / v - .5, 2) - .25;
+  const W = 460, H = 260, L = 46, R = 14, Tp = 14, B = 40;
+  const px = (v) => L + (v / 30) * (W - L - R);
+  const py = (lx) => Tp + (1 - (lx + 2) / 4) * (H - Tp - B);
+  const d = useMemo(() => { let p = ''; for (let lx = -2; lx <= 2.001; lx += .05) p += `${p ? 'L' : 'M'}${px(gmid(lx)).toFixed(1)} ${py(lx).toFixed(1)}`; return p; }, []);
+  const ic = Math.max(icOf(g), .01), lx = Math.log10(ic);
   const reg = ic < .1 ? 'weak inversion' : ic > 10 ? 'strong inversion' : 'moderate inversion';
   const role = g > 14 ? 'Input pair territory: max gm per amp, small input cap.' : g > 8 ? 'Mirror and current-source territory: better matching and headroom.' : 'Deep strong inversion: high V*, big overdrive.';
   return (
     <div className="gmid">
-      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="gm over ID versus inversion coefficient">
-        <rect x={px(-2)} y={py(20)} width={px(2) - px(-2)} height={py(15) - py(20)} className="gmid__band gmid__band--in" />
-        <rect x={px(-2)} y={py(11)} width={px(2) - px(-2)} height={py(9) - py(11)} className="gmid__band gmid__band--cs" />
-        {[-2, -1, 0, 1, 2].map((v) => <g key={v}><line x1={px(v)} x2={px(v)} y1={Tp} y2={H - B} className="gmid__g" /><text x={px(v)} y={H - 16} textAnchor="middle">{v === 0 ? '1' : `10^${v}`}</text></g>)}
-        {[0, 10, 20, 30].map((v) => <g key={v}><line x1={L} x2={W - R} y1={py(v)} y2={py(v)} className="gmid__g" /><text x={L - 6} y={py(v) + 4} textAnchor="end">{v}</text></g>)}
+      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Inversion coefficient versus gm over ID">
+        <rect x={px(15)} y={Tp} width={px(20) - px(15)} height={H - Tp - B} className="gmid__band gmid__band--in" />
+        <rect x={px(9)} y={Tp} width={px(11) - px(9)} height={H - Tp - B} className="gmid__band gmid__band--cs" />
+        {[0, 10, 20, 30].map((v) => <g key={v}><line x1={px(v)} x2={px(v)} y1={Tp} y2={H - B} className="gmid__g" /><text x={px(v)} y={H - B + 15} textAnchor="middle">{v}</text></g>)}
+        {[-2, -1, 0, 1, 2].map((v) => <g key={v}><line x1={L} x2={W - R} y1={py(v)} y2={py(v)} className="gmid__g" /><text x={L - 6} y={py(v) + 4} textAnchor="end">{v === 0 ? '1' : `10^${v}`}</text></g>)}
         <path d={d} className="gmid__curve" />
-        <line x1={px(x)} x2={px(x)} y1={Tp} y2={H - B} className="gmid__cur" />
-        <rect x={px(x) - 5} y={py(g) - 5} width="10" height="10" className="gmid__dot" />
-        <text x={W - R} y={H - 2} textAnchor="end">inversion coefficient IC</text>
-        <text x={L + 4} y={py(20) - 3}>input pair</text><text x={L + 4} y={py(9) + 12}>mirrors</text>
+        <line x1={px(g)} x2={px(g)} y1={Tp} y2={H - B} className="gmid__cur" />
+        <line x1={L} x2={W - R} y1={py(lx)} y2={py(lx)} className="gmid__cur" />
+        <rect x={px(g) - 5} y={py(lx) - 5} width="10" height="10" className="gmid__dot" />
+        <text x={(L + W - R) / 2} y={H - 8} textAnchor="middle">gm/ID (µS/µA)</text>
+        <text transform={`translate(11 ${(Tp + H - B) / 2}) rotate(-90)`} textAnchor="middle">IC (inversion coefficient)</text>
+        <text x={px(17.5)} y={Tp + 11} textAnchor="middle">input pair</text>
+        <text x={px(10)} y={Tp + 11} textAnchor="middle">mirrors</text>
       </svg>
-      <input type="range" min="-2" max="2" step="0.01" value={x} onChange={(e) => setX(+e.target.value)} aria-label="Inversion coefficient" />
+      <input type="range" min="3" max="29.5" step="0.1" value={g} onChange={(e) => setG(+e.target.value)} aria-label="gm over ID" />
       <p><b>gm/ID = {g.toFixed(1)} µS/µA</b> · IC = {ic < 1 ? ic.toFixed(2) : ic.toFixed(1)} · {reg}</p>
       <p className="gmid__role">{role}</p>
     </div>
@@ -477,6 +504,7 @@ function About() {
           <p className="about__lead">Mohammed Nasr Eldin. Analog IC design in CMOS.</p>
           <p>This site is my record of the Analog IC Design (CMOS Technology) summer training at the Information Technology Institute, 15 July to 9 September. It runs from an RC circuit to a fully differential folded-cascode OTA with common-mode feedback.</p>
           <p>Every report follows one order: specs, hand analysis and gm/ID sizing, simulation, then a table comparing the two with the error and a comment on the gap. Mini projects were supervised by Dr. Hesham Omran.</p>
+          <a className="btn about__repo" href={REPO} target="_blank" rel="noreferrer">View the repository on GitHub</a>
           <h3>Master Micro course</h3>
           <p>The training follows the free Analog IC Design course on Master Micro. Sizing uses its Analog Designer's Toolbox.</p>
           <ul className="course">
@@ -486,7 +514,7 @@ function About() {
         </div>
         <div>
           <h3>Try the method: gm/ID</h3>
-          <p>Slide from weak to strong inversion. Roles pick the point, and the width follows from the current.</p>
+          <p>Slide gm/ID from strong inversion (left) to weak inversion (right). Roles pick the point, and the width follows from the current.</p>
           <GmId />
         </div>
       </div>
@@ -524,6 +552,7 @@ function Intro({ title, children, mode, next }) {
         <h1>{title}</h1>
         {children}
         <Contact labels />
+        <a className="btn btn--sm intro__repo" href={REPO} target="_blank" rel="noreferrer">View the repo on GitHub</a>
       </div>
       <Scope mode={mode} key={mode} />
     </header>
@@ -559,43 +588,50 @@ function MonteCarlo() {
   );
 }
 
+const norm = (t) => t.toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').trim();
+// Matches the lab number (5, 05, "lab 5") or words from its name, topic and keywords.
+function matchLab(l, q) {
+  const parts = norm(q).split(/\s+/).filter((w) => w && w !== 'lab');
+  if (!parts.length) return true;
+  const hay = norm(`${l.title} ${CATS[l.cat].name} ${l.kw}`);
+  return parts.every((w) => (/^\d+$/.test(w) ? Number(w) === Number(l.id) : hay.includes(w)));
+}
+
 function Labs({ go }) {
   const [cat, setCat] = useState('all');
   const [q, setQ] = useState('');
   const [open, setOpen] = useState('05');
-  const list = LABS.filter((l) => {
-    if (cat !== 'all' && l.cat !== cat) return false;
-    const needle = q.trim().toLowerCase();
-    if (!needle) return true;
-    const haystack = [l.id, `lab ${l.id}`, l.title, CATS[l.cat].name, l.blurb, l.sim.join(' '), l.an.join(' '), l.stats.flat().join(' ')]
-      .join(' ')
-      .toLowerCase();
-    return haystack.includes(needle);
-  });
+  const list = LABS.filter((l) => (cat === 'all' || l.cat === cat) && matchLab(l, q));
+  const pick = (k) => { setCat(k); setOpen(null); };
   return (
     <>
       <Intro title="Labs" mode="gain">
-        <p>From a single RC filter to a five-transistor OTA. Each report sizes with gm/ID, calculates by hand, simulates, then compares the two.</p>
-        <p>Labs 09 and 11 grew into the mini projects, so they sit on the next page.</p>
-        <button className="btn btn--solid" onClick={() => go('projects')}>Go to Projects</button>
+        <p>The building blocks behind the projects, from a single RC filter to a five-transistor OTA. Each report sizes with gm/ID, calculates by hand, simulates, then compares the two.</p>
+        <p>Labs 09 and 11 grew into the mini projects, so they live on the Projects page.</p>
+        <div className="intro__btns">
+          <button className="btn" onClick={() => go('projects')}>Back to Projects</button>
+          <button className="btn btn--solid" onClick={() => go('challenges')}>Next: Design challenges</button>
+        </div>
       </Intro>
 
-      <section className="wrap setup" aria-label="Lab setup">
-        <div><small>Technology</small><b>{LAB_TECH}</b></div>
-        <div><small>Sizing</small><b>ADT, gm/ID method</b></div>
-        <div><small>Simulation</small><b>Cadence Virtuoso · xschem + ngspice</b></div>
-        <div><small>Every report ends with</small><b>Hand vs simulation, with error</b></div>
-      </section>
+      <div className="wrap">
+        <section className="setup" aria-label="Lab setup">
+          <div><small>Technology</small><b>{LAB_TECH}</b></div>
+          <div><small>Sizing</small><b>ADT, gm/ID method</b></div>
+          <div><small>Simulation</small><b>xschem + ngspice (Labs 00 to 07), Virtuoso (08, 10)</b></div>
+          <div><small>Every report ends with</small><b>Hand vs simulation, with error</b></div>
+        </section>
+      </div>
 
       <section className="wrap labs">
         <div className="toolbar">
           <div className="chips chips--filter" role="group" aria-label="Filter by topic">
-            <button className={cat === 'all' ? 'on' : ''} onClick={() => { setCat('all'); setOpen(null); }}>All {LABS.length}</button>
+            <button className={cat === 'all' ? 'on' : ''} onClick={() => pick('all')}>All {LABS.length}</button>
             {Object.entries(CATS).map(([k, c]) => (
-              <button key={k} className={cat === k ? 'on' : ''} style={{ '--cat': c.color }} onClick={() => { setCat(k); setOpen(null); }}>{c.name}</button>
+              <button key={k} className={cat === k ? 'on' : ''} style={{ '--cat': c.color }} onClick={() => pick(k)}>{c.name}</button>
             ))}
           </div>
-          <input className="search" type="search" placeholder="Search a topic or a number" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Search labs" />
+          <input className="search" type="search" placeholder="Search by name or number, e.g. cascode or 5" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Search labs" />
         </div>
 
         {list.length === 0 && <p className="empty">No lab matches “{q}”. Clear the search or pick All.</p>}
@@ -619,8 +655,8 @@ function Labs({ go }) {
                       <ul className="tiles">{l.stats.map(([k, v]) => <li key={k}><small>{k}</small><b>{v}</b></li>)}</ul>
                     </div>
                     <dl className="kit">
-                      <div><dt>Technology</dt><dd>{LAB_TECH}</dd></div>
-                      <div><dt>Sizing</dt><dd>ADT · gm/ID</dd></div>
+                      <div><dt>Technology</dt><dd>{l.tech || LAB_TECH}</dd></div>
+                      <div><dt>Sizing</dt><dd>{l.size || 'ADT · gm/ID'}</dd></div>
                       <div><dt>Simulation</dt><dd>{l.sim.join(', ')}</dd></div>
                       <div><dt>Analyses</dt><dd>{l.an.join(' · ')}</dd></div>
                     </dl>
@@ -646,7 +682,7 @@ function Compare({ t }) {
     <div className="cmp-wrap">
       <table className="cmp">
         <thead>
-          <tr><th />{t.cols.map((c) => <th key={c}>{c}</th>)}{two && <th>Δ</th>}{two && <th aria-label="Comparison bars" />}</tr>
+          <tr><th />{t.cols.map((c) => <th key={c}>{c}</th>)}{two && <th>Δ</th>}{two && <th className="cmp__viz" aria-label="Comparison bars" />}</tr>
         </thead>
         <tbody>
           {t.rows.map((r) => {
@@ -738,9 +774,11 @@ function Projects({ go }) {
   return (
     <>
       <Intro title="Projects" mode="settle">
-        <p>Where the labs come together. Mirrors, differential pairs and feedback from the lab page become a complete two-stage OTA and a fully differential folded-cascode with CMFB.</p>
+        <p>Two mini projects where the lab blocks come together: mirrors, differential pairs and feedback become a complete two-stage OTA and a fully differential folded-cascode with CMFB.</p>
         <p>Both were supervised by Dr. Hesham Omran and follow one flow: derive specs, read design points from gm/ID charts, size every transistor, verify in Virtuoso.</p>
-        <button className="btn" onClick={() => go('labs')}>Back to Labs</button>
+        <div className="intro__btns">
+          <button className="btn btn--solid" onClick={() => go('labs')}>Next: Labs</button>
+        </div>
       </Intro>
       <Showcase items={PROJECTS} />
     </>
@@ -752,7 +790,9 @@ function Challenges({ go }) {
     <>
       <Intro title="Design challenges" mode="bgr">
         <p>Projects came with a spec sheet and a method. Challenges add harder conditions: a rail-to-rail op-amp across process corners, a bandgap across temperature, and a noise problem worked by hand.</p>
-        <button className="btn" onClick={() => go('projects')}>Back to Projects</button>
+        <div className="intro__btns">
+          <button className="btn" onClick={() => go('labs')}>Back to Labs</button>
+        </div>
       </Intro>
       <Showcase items={CHALLENGES} />
     </>
@@ -771,15 +811,7 @@ export default function App() {
   // Navigation is plain React state: no hash, no pushState, so the browser
   // history never fills up with "#" steps.
   const [page, setPage] = useState('projects');
-  const [brandPulse, setBrandPulse] = useState(false);
-  const brandTimer = useRef(null);
-  const pulseBrand = () => {
-    setBrandPulse(false);
-    // restart the animation even on rapid repeat clicks
-    requestAnimationFrame(() => setBrandPulse(true));
-    clearTimeout(brandTimer.current);
-    brandTimer.current = setTimeout(() => setBrandPulse(false), 500);
-  };
+  const [ping, setPing] = useState(0);
 
   useEffect(() => {
     if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual';
@@ -811,9 +843,9 @@ export default function App() {
       <div className="progress" aria-hidden="true" />
       <nav className="nav">
         <div className="nav__in">
-          <button className={`brand ${brandPulse ? 'brand--pulse' : ''}`} onClick={pulseBrand} aria-label="CMOS Analog IC, ITI summer training" type="button">
+          <button className="brand" onClick={() => setPing((n) => n + 1)} aria-label="Signal logo">
             <svg viewBox="0 0 40 24" width="34" height="20" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinejoin="round">
-              <path d="M1 12 Q6 -2 11 12 T21 12 T31 12 L39 12" />
+              <path key={ping} className={ping ? 'brand__wave' : ''} pathLength="1" d="M1 12 Q6 -2 11 12 T21 12 T31 12 L39 12" />
             </svg>
             <span><b>CMOS Analog IC</b><small>ITI summer training</small></span>
           </button>
