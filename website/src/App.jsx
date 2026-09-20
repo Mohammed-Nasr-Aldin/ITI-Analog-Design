@@ -186,11 +186,10 @@ const CHALLENGES = [
   {
     id: 'noise', tab: 'Noise assignment', sub: 'Johns & Martin 9.10', title: 'Noise assignment',
     summary: 'Hand analysis of a 10 kHz low-pass filter around an op-amp (Cf = 160 pF, Rf = 100 kΩ, R1 = 10 kΩ, R2 = 9.1 kΩ). Voltage noise, both noise currents and resistor thermal noise combine by superposition, each shaped by its own transfer function.',
-    schematics: [],
+    schematics: [{ label: 'Problem', src: A('noise-assignment/problem.jpg') }],
     tools: ['Hand analysis'],
     facts: [['Source', 'Johns and Martin, Ex. 9.10, Sec. 9.4.1']],
     pdf: { src: A('noise-assignment/noise-assignment.pdf'), label: 'PDF' },
-    tiles: [['Inverting-terminal sources', '18.5 µVrms'], ['Non-inverting-terminal sources', '74.6 µVrms'], ['Total output noise', '76.86 µVrms'], ['SNR at 100 mVrms in', '82.3 dB']],
     table: { cols: ['Value'], rows: [
       { m: 'Inverting-terminal sources', a: '18.5 µVrms' }, { m: 'Non-inverting-terminal sources', a: '74.6 µVrms' },
       { m: 'Total output noise', a: '76.86 µVrms' }, { m: 'SNR (1 Vrms output)', a: '82.3 dB' },
@@ -468,13 +467,15 @@ function GmId() {
   const py = (lx) => Tp + (1 - (lx + 2) / 4) * (H - Tp - B);
   const d = useMemo(() => { let p = ''; for (let lx = -2; lx <= 2.001; lx += .05) p += `${p ? 'L' : 'M'}${px(gmid(lx)).toFixed(1)} ${py(lx).toFixed(1)}`; return p; }, []);
   const ic = Math.max(icOf(g), .01), lx = Math.log10(ic);
-  const reg = ic < .1 ? 'weak inversion' : ic > 10 ? 'strong inversion' : 'moderate inversion';
-  const role = g > 14 ? 'Input pair territory: max gm per amp, small input cap.' : g > 8 ? 'Mirror and current-source territory: better matching and headroom.' : 'Deep strong inversion: high V*, big overdrive.';
+  const reg = g < 10 ? 'strong inversion' : g < 20 ? 'moderate inversion' : 'weak inversion';  const role = g > 14 ? 'Input pair territory: max gm per amp, small input cap.' : g > 8 ? 'Mirror and current-source territory: better matching and headroom.' : 'Deep strong inversion: high V*, big overdrive.';
   return (
     <div className="gmid">
       <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Inversion coefficient versus gm over ID">
+        <rect x={px(0)} y={Tp} width={px(10) - px(0)} height={H - Tp - B} className="gmid__band gmid__band--strong" />
+        <rect x={px(10)} y={Tp} width={px(20) - px(10)} height={H - Tp - B} className="gmid__band gmid__band--mod" />
+        <rect x={px(20)} y={Tp} width={px(30) - px(20)} height={H - Tp - B} className="gmid__band gmid__band--weak" />
         <rect x={px(15)} y={Tp} width={px(20) - px(15)} height={H - Tp - B} className="gmid__band gmid__band--in" />
-        <rect x={px(9)} y={Tp} width={px(11) - px(9)} height={H - Tp - B} className="gmid__band gmid__band--cs" />
+        <rect x={px(8.5)} y={Tp} width={px(11.5) - px(8.5)} height={H - Tp - B} className="gmid__band gmid__band--cs" />
         {[0, 10, 20, 30].map((v) => <g key={v}><line x1={px(v)} x2={px(v)} y1={Tp} y2={H - B} className="gmid__g" /><text x={px(v)} y={H - B + 15} textAnchor="middle">{v}</text></g>)}
         {[-2, -1, 0, 1, 2].map((v) => <g key={v}><line x1={L} x2={W - R} y1={py(v)} y2={py(v)} className="gmid__g" /><text x={L - 6} y={py(v) + 4} textAnchor="end">{v === 0 ? '1' : `10^${v}`}</text></g>)}
         <path d={d} className="gmid__curve" />
@@ -483,8 +484,11 @@ function GmId() {
         <rect x={px(g) - 5} y={py(lx) - 5} width="10" height="10" className="gmid__dot" />
         <text x={(L + W - R) / 2} y={H - 8} textAnchor="middle">gm/ID (µS/µA)</text>
         <text transform={`translate(11 ${(Tp + H - B) / 2}) rotate(-90)`} textAnchor="middle">IC (inversion coefficient)</text>
-        <text x={px(17.5)} y={Tp + 11} textAnchor="middle">input pair</text>
-        <text x={px(10)} y={Tp + 11} textAnchor="middle">mirrors</text>
+        <text x={px(5)} y={Tp + 11} textAnchor="middle">strong</text>
+        <text x={px(15)} y={Tp + 11} textAnchor="middle">moderate</text>
+        <text x={px(25)} y={Tp + 11} textAnchor="middle">weak</text>
+        <text x={px(17.5)} y={Tp + 25} textAnchor="middle">input pair</text>
+        <text x={px(10)} y={Tp + 25} textAnchor="middle">mirrors</text>
       </svg>
       <input type="range" min="3" max="29.5" step="0.1" value={g} onChange={(e) => setG(+e.target.value)} aria-label="gm over ID" />
       <p><b>gm/ID = {g.toFixed(1)} µS/µA</b> · IC = {ic < 1 ? ic.toFixed(2) : ic.toFixed(1)} · {reg}</p>
@@ -503,9 +507,13 @@ function About() {
           <h2>About</h2>
           <p className="about__lead">Mohammed Nasr Eldin. Analog IC design in CMOS.</p>
           <p>This site is my record of the Analog IC Design (CMOS Technology) summer training at the Information Technology Institute, 15 July to 9 September. It runs from an RC circuit to a fully differential folded-cascode OTA with common-mode feedback.</p>
-          <p>Every report follows one order: specs, hand analysis and gm/ID sizing, simulation, then a table comparing the two with the error and a comment on the gap. Mini projects were supervised by Dr. Hesham Omran.</p>
+          <p>Every report follows one order: specs, hand analysis and gm/ID sizing, simulation, then a table comparing the two with the error and a comment on the gap.</p>
+          <p>The training was supervised by Dr. Hesham Omran.</p>
           <a className="btn about__repo" href={REPO} target="_blank" rel="noreferrer">View the repository on GitHub</a>
           <h3>Master Micro course</h3>
+          <div className="about__mm">
+            <img src={A('logos/mastermicro-logo.jpeg')} alt="Master Micro" />
+          </div>
           <p>The training follows the free Analog IC Design course on Master Micro. Sizing uses its Analog Designer's Toolbox.</p>
           <ul className="course">
             {COURSE.map((c) => <li key={c.t}><a href={c.href} target="_blank" rel="noreferrer"><b>{c.t}</b><span>{c.d}</span></a></li>)}
@@ -520,8 +528,9 @@ function About() {
       </div>
       <div className="wrap about__grid about__grid--b">
         <div>
+          <img className="about__iti" src={A('logos/ITI-logo.svg')} alt="Information Technology Institute (ITI)" />
           <h3>Tools</h3>
-          <img className="about__tools" src={A('logos/tools-logos.svg')} alt="ITI, Cadence and ADT" />
+          <img className="about__tools" src={A('logos/tools-logos.svg')} alt="xschem, Cadence and ADT" />
           <p>Cadence Virtuoso for schematics and simulation, xschem with ngspice for the open-source flow, ADT for gm/ID sizing. GF180 (180 nm) for the labs and both projects, 65 nm for the op-amp challenge.</p>
           <h3>References</h3>
           <ul className="refs">{REFS.map((r) => <li key={r}>{r}</li>)}</ul>
@@ -537,7 +546,7 @@ function About() {
       </div>
       <div className="wrap about__legal">
         <span>MIT License. Papers and books belong to their authors and are not covered by it.</span>
-        <span>© Mohammed Nasr Eldin</span>
+        <span>© Mohammed Nasr Eldin 2026</span>
       </div>
     </footer>
   );
@@ -618,7 +627,7 @@ function Labs({ go }) {
         <section className="setup" aria-label="Lab setup">
           <div><small>Technology</small><b>{LAB_TECH}</b></div>
           <div><small>Sizing</small><b>ADT, gm/ID method</b></div>
-          <div><small>Simulation</small><b>xschem + ngspice (Labs 00 to 07), Virtuoso (08, 10)</b></div>
+          <div><small>Simulation</small><b>Xschem/ngspice · Cadence/Virtuoso</b></div>
           <div><small>Every report ends with</small><b>Hand vs simulation, with error</b></div>
         </section>
       </div>

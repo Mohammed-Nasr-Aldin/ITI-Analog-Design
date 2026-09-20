@@ -235,6 +235,11 @@ main { animation: fade .4s ease both; }
 .course b { display: block; }
 .course span { font-size: .85rem; opacity: .8; }
 .about__tools { width: 100%; max-width: 480px; margin-bottom: 14px; }
+/* ITI logo sits above the "Tools" heading; sized to match one tile of tools-logos.svg (262/822 of its width) */
+.about__iti { display: block; width: 100%; max-width: 480px; margin-bottom: 16px; }
+.about__iti + h3 { margin-top: 0; }
+.about__mm { background: #fff; display: grid; place-items: center; padding: 14px 20px; margin: 0 0 14px; }
+.about__mm img { max-height: 72px; width: auto; max-width: 100%; object-fit: contain; }
 .refs { padding-left: 18px; list-style: square; font-size: .88rem; color: rgba(255,255,255,.8); }
 .refs li { margin-bottom: 6px; }
 .about__cert { display: block; padding: 0; border: 0; background: none; cursor: zoom-in; max-width: 420px; }
@@ -248,8 +253,13 @@ main { animation: fade .4s ease both; }
 .gmid__curve { fill: none; stroke: #8FB0FF; stroke-width: 3; }
 .gmid__cur { stroke: rgba(255,255,255,.5); stroke-dasharray: 4 4; }
 .gmid__dot { fill: #FF4D67; }
-.gmid__band--in { fill: rgba(42,85,229,.35); }
-.gmid__band--cs { fill: rgba(200,16,46,.35); }
+.gmid__band--strong { fill: rgba(255,178,36,.2); }
+.gmid__band--mod { fill: rgba(14,143,110,.28); }
+.gmid__band--weak { fill: rgba(150,120,255,.25); }
+.gmid__band--in { fill: rgba(42,85,229,.15); stroke: #8FB0FF; stroke-width: 1.5; stroke-dasharray: 5 3; }
+.gmid__band--cs { fill: rgba(200,16,46,.4); }
+.gmid__band--cs { fill: rgba(200,16,46,.4); stroke: rgba(255,255,255,.7); stroke-width: 1; stroke-dasharray: 4 3; }
+
 .gmid input { width: 100%; margin-top: 12px; accent-color: #FF4D67; }
 .gmid p { margin: 8px 0 0; }
 .gmid__role { font-size: .9rem; }
