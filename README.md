@@ -14,47 +14,99 @@
 </p>
 
 <p align="center">
+  <a href="https://mohammed-nasr-aldin.github.io/ITI-Analog-Design">
+    <img alt="Open the live website" src="https://img.shields.io/badge/LIVE%20SITE-Open%20the%20website%20%E2%86%92-2A55E5?style=for-the-badge&labelColor=0B1F4D">
+  </a>
+</p>
+
+<p align="center">
   <img src="signal-animation/signal-banner.svg" alt="Animated signal banner: a scan line sweeps across a noisy raw signal and turns it into a clean output" width="100%">
 </p>
 
 <p align="center"><sub><i>Left of the scan line is the cleaned output, right of it is the raw input. That is the whole job of an analog designer: keep the signal, fight the noise, mismatch, and variation. <a href="signal-animation/">How the banner works</a>.</i></sub></p>
 
-## 🔗 Live site
-
-**[Mohammed Nasr · ITI Analog IC Design](https://mohammed-nasr-aldin.github.io/ITI-Analog-Design)**
-
 ---
 
 ## 📑 Table of contents
 
-1. [📖 Overview](#overview)
-2. [🗂️ Repository structure](#repository-structure)
-3. [🎓 Master Micro course](#master-micro-course)
-4. [🧪 Labs](#labs)
-5. [🛠️ Mini projects](#mini-projects)
-6. [🏆 Design challenges](#design-challenges)
-7. [🔊 Noise assignment](#noise-assignment)
-8. [🧭 Design methodology](#design-methodology)
-9. [🧰 Tools and technologies](#tools-and-technologies)
-10. [📚 References](#references)
-11. [🏅 Certificate](#certificate)
-12. [📜 MIT License](#license)
-13. [🙏 Acknowledgments](#acknowledgments)
-14. [📬 Contact](#contact)
+1. [🌐 Live site](#live-site)
+2. [📖 Overview](#overview)
+3. [🗂️ Repository structure](#repository-structure)
+4. [🎓 Master Micro course](#master-micro-course)
+5. [🧪 Labs](#labs)
+6. [🛠️ Mini projects](#mini-projects)
+7. [🏆 Design challenges](#design-challenges)
+8. [🔊 Noise assignment](#noise-assignment)
+9. [🧭 Design methodology](#design-methodology)
+10. [🧰 Tools and technologies](#tools-and-technologies)
+11. [📚 References](#references)
+12. [🏅 Certificate](#certificate)
+13. [📜 MIT License](#license)
+14. [🙏 Acknowledgments](#acknowledgments)
+15. [📬 Contact](#contact)
+
+---
+
+## <a id="live-site"></a>🌐 Live site
+
+Everything in this repository is also browsable as a website: reports open in the page, figures are one click away, and hand calculations sit next to simulation results.
+
+<p align="center">
+  <a href="https://mohammed-nasr-aldin.github.io/ITI-Analog-Design">
+    <img alt="Open the live website" src="https://img.shields.io/badge/LIVE%20SITE-Open%20the%20website%20%E2%86%92-2A55E5?style=for-the-badge&labelColor=0B1F4D">
+  </a>
+</p>
+
+<table align="center">
+  <thead>
+    <tr>
+      <th align="center">🛠️ Projects</th>
+      <th align="center">🧪 Labs</th>
+      <th align="center">🏆 Design challenges</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="center" valign="top">The two mini projects with a schematic viewer, an image carousel, and a hand-vs-simulation table with the error</td>
+      <td align="center" valign="top">Every lab report with search and topic filters, key results at a glance, and the Lab 05 Monte Carlo histograms with CSV downloads</td>
+      <td align="center" valign="top">The rail-to-rail op-amp, the bandgap reference, and the noise assignment with the original problem</td>
+    </tr>
+  </tbody>
+</table>
+
+<p align="center"><sub>Plus live waveform demos (gain clipping, damping, PTAT trim), an interactive <b>gm/ID explorer</b>, and an in-page PDF viewer.</sub></p>
+
+<details>
+<summary><b>💻 Run the website locally</b></summary>
+
+<br>
+
+```bash
+cd website
+npm install
+npm run dev
+```
+
+The site reads PDFs, images, and CSV files straight from the folders in this repository (labs, projects, design challenges, noise assignment, certificate, logos), so anything added there shows up after a restart of the dev server.
+
+</details>
+
+[⬆️ Back to top](#readme)
 
 ---
 
 ## <a id="overview"></a>📖 Overview
 
-This repository is my complete record of the **Analog IC Design (CMOS Technology)** track at ITI, a summer training that ran from **15 July to 9 September**. It goes from an RC circuit and MOSFET characteristics all the way to a fully differential folded-cascode OTA with common-mode feedback.
+This repository is my complete record of the **Analog IC Design (CMOS Technology)** track at ITI, a summer training that ran from **15 July to 9 September** and was supervised by **Dr. Hesham Omran**. It goes from an RC circuit and MOSFET characteristics all the way to a fully differential folded-cascode OTA with common-mode feedback.
 
 What is inside:
 
-- 🧪 **11 labs**, each written up as a PDF report with hand calculations compared against simulation.
+- 🧪 **12 labs** (00 to 11): ten written up as PDF reports with hand calculations compared against simulation, plus Lab 09 and Lab 11 which grew into the two mini projects.
 - 🛠️ **2 mini projects** (Lab 09 and Lab 11): a two-stage Miller OTA and a fully differential folded-cascode OTA.
 - 🏆 **2 design challenges**: a full-custom rail-to-rail op-amp in 65 nm and a bandgap reference (BGR).
 - 🔊 **noise assignment** (Johns & Martin, Example 9.10).
 - 📄 **2 papers** used as design references, plus screenshots, Monte Carlo data, and the certificate.
+- 🌐 **A website** that presents all of the above.
 
 The content was built from several sources: **Razavi**, **Johns & Martin**, **Sedra & Smith**, the course lectures, and the papers listed in [References](#references).
 
@@ -69,6 +121,13 @@ The content was built from several sources: **Razavi**, **Johns & Martin**, **Se
 ```text
 .
 ├── LICENSE                               # MIT License
+├── README.md
+│
+├── website/                              # source of the live site (React + Vite)
+│   ├── src/
+│   │   ├── App.jsx                       # pages, data, and interactive demos
+│   │   └── index.css                     # styles
+│   └── …                                 # package.json, index.html, config
 │
 ├── certificate/
 │   └── ITI-AIC.jpeg                      # completion certificate
@@ -97,13 +156,17 @@ The content was built from several sources: **Razavi**, **Johns & Martin**, **Se
 │       └── report/
 │
 ├── noise-assignment/
-│   └── noise-assignment.pdf              # Johns & Martin, Ex. 9.10
+│   ├── noise-assignment.pdf              # Johns & Martin, Ex. 9.10
+│   └── problem.jpg                       # the problem statement
 │
 ├── signal-animation/
 │   ├── README.md
 │   └── signal-banner.svg                 # the banner at the top of this page
 │
-└── logos/                                # ADT, Cadence, ITI
+└── logos/
+    ├── ITI-logo.svg                      # ITI
+    ├── -logos.svg                   # xschem, Cadence, ADT
+    └── mastermicro-logo.jpeg             # Master Micro
 ```
 
 <table align="center">
@@ -114,6 +177,10 @@ The content was built from several sources: **Razavi**, **Johns & Martin**, **Se
     </tr>
   </thead>
   <tbody>
+    <tr>
+      <td align="center">🌐 <a href="website/"><code>website</code></a></td>
+      <td align="center">Source code of the live site, which reads its content from the folders below</td>
+    </tr>
     <tr>
       <td align="center">🧪 <a href="ITI-Labs/"><code>ITI-Labs</code></a></td>
       <td align="center">Lab reports 00 to 08 and 10, plus the Lab 05 Monte Carlo results</td>
@@ -128,11 +195,15 @@ The content was built from several sources: **Razavi**, **Johns & Martin**, **Se
     </tr>
     <tr>
       <td align="center">🔊 <a href="noise-assignment/"><code>noise-assignment</code></a></td>
-      <td align="center">Hand noise analysis of a low-pass filter around an op-amp</td>
+      <td align="center">Hand noise analysis of a low-pass filter around an op-amp, with the problem statement</td>
     </tr>
     <tr>
       <td align="center">📡 <a href="signal-animation/"><code>signal-animation</code></a></td>
       <td align="center">The animated SVG banner</td>
+    </tr>
+    <tr>
+      <td align="center">🖼️ <a href="logos/"><code>logos</code></a></td>
+      <td align="center">ITI, Master Micro, and tool logos used by the site and this page</td>
     </tr>
     <tr>
       <td align="center">🏅 <a href="certificate/"><code>certificate</code></a></td>
@@ -146,6 +217,10 @@ The content was built from several sources: **Razavi**, **Johns & Martin**, **Se
 ---
 
 ## <a id="master-micro-course"></a>🎓 Master Micro course
+
+<p align="center">
+  <a href="https://www.master-micro.com/home"><img src="logos/mastermicro-logo.jpeg" alt="Master Micro" width="260"></a>
+</p>
 
 The training content follows the <a href="https://www.master-micro.com/professional-courses/analog-ic-design"><b>Analog IC Design</b></a> course on <a href="https://www.master-micro.com/home"><b>Master Micro</b></a>, the course that helped many students break into the Analog IC Design industry. Everything in it is free: lecture videos, slides, and labs.
 
@@ -286,7 +361,7 @@ Simple current mirror versus wide-swing current mirror, 200 runs each. Raw data:
 
 ## <a id="mini-projects"></a>🛠️ Mini projects
 
-Both projects were supervised by **Dr. Hesham Omran** and follow the same flow: derive specs, extract design points from gm/ID charts (ADT), size every transistor, then verify in Cadence Virtuoso.
+Both projects follow the same flow: derive specs, extract design points from gm/ID charts (ADT), size every transistor, then verify in Cadence Virtuoso.
 
 ### <a id="project-1"></a>1️⃣ Project 1 · Two-stage Miller OTA (Lab 09)
 
@@ -483,14 +558,13 @@ C<sub>c</sub> was reduced from 2 pF to **1.665 pF**, the largest value that stil
 
 <table align="center">
   <tr>
-    <td align="center"><img src="projects/project2/FD-folded.png" alt="Fully differential folded-cascode OTA" width="300"><br><sub>Folded-cascode OTA</sub></td>
-    <td align="center"><img src="projects/project2/CMFB.png" alt="Common-mode feedback network" width="300"><br><sub>CMFB</sub></td>
-    <td align="center"><img src="projects/project2/Ao.png" alt="Open-loop gain" width="300"><br><sub>Open-loop gain (Aol)</sub></td>
+    <td align="center" colspan="2"><img src="projects/project2/FD-folded.png" alt="Fully differential folded-cascode OTA" width="300"><br><sub>Folded-cascode OTA</sub></td>
+    <td align="center" colspan="2"><img src="projects/project2/CMFB.png" alt="Common-mode feedback network" width="300"><br><sub>CMFB</sub></td>
+    <td align="center" colspan="2"><img src="projects/project2/Ao.png" alt="Open-loop gain" width="300"><br><sub>Open-loop gain (Aol)</sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="projects/project2/Vod-pulse.png" alt="Differential output for a pulse input" width="300"><br><sub>V<sub>od</sub>, pulse input</sub></td>
-    <td align="center"><img src="projects/project2/Vod-sin.png" alt="Differential output for a sine input" width="300"><br><sub>V<sub>od</sub>, sine input</sub></td>
-    <td></td>
+    <td align="center" colspan="3"><img src="projects/project2/Vod-pulse.png" alt="Differential output for a pulse input" width="300"><br><sub>V<sub>od</sub>, pulse input</sub></td>
+    <td align="center" colspan="3"><img src="projects/project2/Vod-sin.png" alt="Differential output for a sine input" width="300"><br><sub>V<sub>od</sub>, sine input</sub></td>
   </tr>
 </table>
 
@@ -587,16 +661,13 @@ The op-amp was also checked as an **inverting** amplifier (gain −1), a **non-i
 
 <table align="center">
   <tr>
-    <td align="center"><img src="design-challenges/op-amp/shared-bias-op-amp-ckt.png" alt="Op-amp with shared cascode bias" width="360"><br><sub>Shared bias circuit</sub></td>
-    <td align="center"><img src="design-challenges/op-amp/ind-bias-op-amp-ckt.png" alt="Op-amp with independent cascode bias" width="360"><br><sub>Independent bias circuit</sub></td>
+    <td align="center" colspan="2"><img src="design-challenges/op-amp/shared-bias-op-amp-ckt.png" alt="Op-amp with shared cascode bias" width="300"><br><sub>Shared bias circuit</sub></td>
+    <td align="center" colspan="2"><img src="design-challenges/op-amp/ind-bias-op-amp-ckt.png" alt="Op-amp with independent cascode bias" width="300"><br><sub>Independent bias circuit</sub></td>
+    <td align="center" colspan="2"><img src="design-challenges/op-amp/LG.png" alt="Loop gain" width="300"><br><sub>Loop gain (LG)</sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="design-challenges/op-amp/LG.png" alt="Loop gain" width="360"><br><sub>Loop gain (LG)</sub></td>
-    <td align="center"><img src="design-challenges/op-amp/VOUT-VICM.png" alt="Output voltage versus input common-mode voltage" width="360"><br><sub>V<sub>OUT</sub> vs V<sub>ICM</sub></sub></td>
-  </tr>
-  <tr>
-    <td align="center"><img src="design-challenges/op-amp/I-sin.png" alt="Current with a sine input" width="360"><br><sub>Current, sine input</sub></td>
-    <td></td>
+    <td align="center" colspan="3"><img src="design-challenges/op-amp/VOUT-VICM.png" alt="Output voltage versus input common-mode voltage" width="300"><br><sub>V<sub>OUT</sub> vs V<sub>ICM</sub></sub></td>
+    <td align="center" colspan="3"><img src="design-challenges/op-amp/I-sin.png" alt="Current with a sine input" width="300"><br><sub>Current, sine input</sub></td>
   </tr>
 </table>
 
@@ -654,6 +725,11 @@ A bandgap reference designed first with an **ideal error amplifier**, then with 
 **📄 Report:** [`noise-assignment.pdf`](noise-assignment/noise-assignment.pdf)
 
 Hand analysis of Example 9.10 (Section 9.4.1) from Johns & Martin: the total output noise of a 10 kHz low-pass filter built around an op-amp (C<sub>f</sub> = 160 pF, R<sub>f</sub> = 100 kΩ, R<sub>1</sub> = 10 kΩ, R<sub>2</sub> = 9.1 kΩ). The op-amp voltage noise, both noise currents, and the resistor thermal noise are combined by superposition, and each part is shaped by its own transfer function.
+
+<p align="center">
+  <img src="noise-assignment/problem.jpg" alt="Noise assignment problem: low-pass filter around an op-amp, Johns and Martin Example 9.10" width="560"><br>
+  <sub>The problem statement</sub>
+</p>
 
 <table align="center">
   <thead>
@@ -742,16 +818,8 @@ Rules of thumb used throughout the reports:
 
 ## <a id="tools-and-technologies"></a>🧰 Tools and technologies
 
-<!-- <table align="center">
-  <tr>
-    <td align="center" bgcolor="#FFFFFF" width="200"><img src="logos/ITI-logo.png" alt="ITI" height="64"></td>
-    <td align="center" bgcolor="#FFFFFF" width="200"><img src="logos/cadence-logo.png" alt="Cadence" height="64"></td>
-    <td align="center" bgcolor="#FFFFFF" width="200"><img src="logos/ADT-logo.png" alt="ADT" height="64"></td>
-  </tr>
-</table> -->
-
 <p align="center">
-  <img src="logos/tools-logos.svg" alt="ITI, Cadence and ADT" width="700">
+  <img src="logos/tools-logos.svg" alt="xschem, Cadence and ADT" width="700">
 </p>
 
 <table align="center">
@@ -821,6 +889,10 @@ Rules of thumb used throughout the reports:
 ## <a id="certificate"></a>🏅 Certificate
 
 <p align="center">
+  <img src="logos/ITI-logo.svg" alt="Information Technology Institute (ITI)" width="700"><br>
+</p> 
+
+<p align="center">
   <img src="certificate/ITI-AIC.jpeg" alt="ITI Analog IC Design track completion certificate" width="640">
 </p>
 
@@ -836,7 +908,7 @@ This repository is licensed under the **MIT License**. See the [`LICENSE`](LICEN
 
 ## <a id="acknowledgments"></a>🙏 Acknowledgments
 
-Thank you to **ITI** for the training program, and to **Dr. Hesham Omran** for supervising the mini projects and for the gm/ID design methodology and the papers that shaped them.
+Thank you to **ITI** for the training program, and to **Dr. Hesham Omran** for supervising the training and for the gm/ID design methodology and the papers that shaped the mini projects.
 
 ---
 
