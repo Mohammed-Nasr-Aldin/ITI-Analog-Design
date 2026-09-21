@@ -19,3 +19,33 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+--------------------------------------------------------------------------------
+
+THIRD-PARTY MATERIALS NOTICE
+
+The MIT License above applies only to the original work of Mohammed Nasr Eldin
+in this repository: the lab and project reports, the hand calculations, the
+simulation setups and figures, the website source code, and the banner
+animation.
+
+It does not apply to any third-party material, including:
+
+  - Papers, books, and publications referenced or included for study purposes,
+    such as the copies of R. Hogervorst et al. (IEEE JSSC, 1994) and
+    H. Omran (Designs, 2019), and the works of B. Razavi, D. Johns and
+    K. Martin, and A. Sedra and K. Smith. This includes the problem statement
+    of the noise assignment (Johns and Martin, Example 9.10).
+  - Course materials, tools, and services from Master Micro, including the
+    Analog Designer's Toolbox (ADT).
+  - Logos, names, and trademarks of ITI, Cadence, Master Micro, ADT, and
+    xschem, which belong to their respective owners.
+
+All such material remains the property of its respective authors, publishers,
+and owners. It is included only for educational and reference purposes. I make
+no claim of ownership over it, and nothing in this repository grants any right
+to reuse it. To use any of it, please obtain permission from the original
+copyright holders.
+
+If you are a rights holder and would like any of this material removed, please
+contact me and I will remove it promptly.
