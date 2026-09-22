@@ -945,4 +945,4 @@ Reach out for collaborations, discussions, or opportunities. 🤝
   </tr>
 </table>
 
-<p align="center"><sub>© Mohammed Nasr Eldin · Built with passion for Analog IC Design &amp; Engineering</sub></p>
+<p align="center"><sub>© Mohammed Nasr Eldin</sub></p>
