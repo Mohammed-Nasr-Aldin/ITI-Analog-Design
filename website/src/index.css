@@ -337,3 +337,59 @@ main { animation: fade .4s ease both; }
   .nav__repo { display: none; }
   .intro__repo { display: inline-flex; }
 }
+
+
+/* ===== AnalogLab: interactive graphs page ===== */
+.nav--lab .tabs__ind { opacity: 0; }
+.nav--lab .brand svg path { stroke: #FF4D67; }
+
+/* header without the scope: single column */
+.intro--solo { grid-template-columns: minmax(0, 1fr); padding-bottom: 32px; }
+
+.lg { padding-top: 8px; padding-bottom: 96px; }
+.lg sub { font-size: .7em; line-height: 0; }
+.lg .tabs--inline { margin: 4px 0 20px; }
+
+.lg__card { position: relative; margin-top: 18px; padding: 20px; background: var(--panel); border: 1px solid var(--line); animation: fade .35s ease both; }
+.lg__card::before, .lg__card::after { content: ''; position: absolute; width: 22px; height: 22px; border: 0 solid var(--blue); pointer-events: none; }
+.lg__card::before { top: -1px; left: -1px; border-width: 4px 0 0 4px; }
+.lg__card::after { bottom: -1px; right: -1px; border-width: 0 4px 4px 0; }
+.lg__card canvas { user-select: none; -webkit-user-select: none; }
+
+.lg__mode { margin: 0 0 14px; max-width: 100%; }
+.lg__mode .tabs { max-width: 100%; }
+
+/* controls fade in when another graph is picked */
+.lg__low { animation: fade .35s ease both; }
+
+.lg__out { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1px; margin-top: 16px; background: var(--line); border: 1px solid var(--line); }
+.lg__out li { min-width: 0; min-height: 54px; padding: 10px 14px; background: var(--paper); }
+.lg__out small { display: block; font-size: .74rem; color: var(--ink2); }
+.lg__out b { font: 600 .88rem var(--mono); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+
+/* sliders: stacked under the results, capped on desktop */
+.lg__bars { display: flex; flex-direction: column; gap: 18px; width: 100%; max-width: 420px; margin: 20px 0 0; }
+.lg__bar { display: block; }
+.lg__bar span { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-weight: 700; font-size: .85rem; }
+.lg__lab { font-style: normal; }
+.lg__bar b { font: 600 .82rem var(--mono); font-variant-numeric: tabular-nums; color: var(--blue); white-space: nowrap; min-width: 9ch; text-align: right; }
+.lg__bar input { display: block; width: 100%; height: 28px; margin-top: 6px; accent-color: var(--blue); touch-action: pan-y; cursor: grab; }
+.lg__bar input:active { cursor: grabbing; }
+
+.lg__note { margin: 18px 0 0; max-width: none; padding-top: 12px; border-top: 1px dashed var(--line); font-size: .85rem; color: var(--ink2); }
+
+@media (max-width: 560px) {
+  .lg { padding-bottom: 64px; }
+  .lg .tabs--inline .tab { font-size: 1rem; }
+  .lg__card { padding: 12px; }
+  .lg__out { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lg__out li { padding: 8px 10px; }
+  .lg__out b { font-size: .78rem; }
+  .lg__bars { max-width: none; gap: 16px; }
+  .lg__bar span { font-size: .8rem; }
+  .lg__bar input { height: 34px; }
+  .lg__note { font-size: .8rem; }
+  .lg__bar input { will-change: transform; }
+  .lg__card canvas { will-change: contents; }
+  .lg__out b { font-size: .78rem; white-space: nowrap; }
+}

@@ -285,7 +285,7 @@ function Tabs({ items, value, onChange, variant = 'inline', label }) {
     if (el) setInd({ l: el.offsetLeft, w: el.offsetWidth });
   }, []);
   useLayoutEffect(() => { measure(); }, [value, items, measure]);
-    useEffect(() => {
+  useEffect(() => {
     const box = wrap.current;
     const el = box?.querySelector('[aria-selected="true"]');
     if (!box || !el) return;
@@ -474,7 +474,7 @@ function GmId() {
         <rect x={px(0)} y={Tp} width={px(10) - px(0)} height={H - Tp - B} className="gmid__band gmid__band--strong" />
         <rect x={px(10)} y={Tp} width={px(20) - px(10)} height={H - Tp - B} className="gmid__band gmid__band--mod" />
         <rect x={px(20)} y={Tp} width={px(30) - px(20)} height={H - Tp - B} className="gmid__band gmid__band--weak" />
-        <rect x={px(15)} y={Tp} width={px(20) - px(15)} height={H - Tp - B} className="gmid__band gmid__band--in" />
+        <rect x={px(15)} y={Tp} width={px(25) - px(15)} height={H - Tp - B} className="gmid__band gmid__band--in" />
         <rect x={px(8.5)} y={Tp} width={px(11.5) - px(8.5)} height={H - Tp - B} className="gmid__band gmid__band--cs" />
         {[0, 10, 20, 30].map((v) => <g key={v}><line x1={px(v)} x2={px(v)} y1={Tp} y2={H - B} className="gmid__g" /><text x={px(v)} y={H - B + 15} textAnchor="middle">{v}</text></g>)}
         {[-2, -1, 0, 1, 2].map((v) => <g key={v}><line x1={L} x2={W - R} y1={py(v)} y2={py(v)} className="gmid__g" /><text x={L - 6} y={py(v) + 4} textAnchor="end">{v === 0 ? '1' : `10^${v}`}</text></g>)}
@@ -487,13 +487,357 @@ function GmId() {
         <text x={px(5)} y={Tp + 11} textAnchor="middle">strong</text>
         <text x={px(15)} y={Tp + 11} textAnchor="middle">moderate</text>
         <text x={px(25)} y={Tp + 11} textAnchor="middle">weak</text>
-        <text x={px(17.5)} y={Tp + 25} textAnchor="middle">input pair</text>
+        <text x={px(20)} y={Tp + 25} textAnchor="middle">input pair</text>
         <text x={px(10)} y={Tp + 25} textAnchor="middle">mirrors</text>
       </svg>
       <input type="range" min="3" max="29.5" step="0.1" value={g} onChange={(e) => setG(+e.target.value)} aria-label="gm over ID" />
       <p><b>gm/ID = {g.toFixed(1)} µS/µA</b> · IC = {ic < 1 ? ic.toFixed(2) : ic.toFixed(1)} · {reg}</p>
       <p className="gmid__role">{role}</p>
     </div>
+  );
+}
+
+/* ======================= AnalogLab (interactive graphs page) ======================= */
+
+const AL_FONT = 'Archivo, system-ui, sans-serif';
+const AL = { a: '#2A55E5', b: '#C8102E', m: '#8592A8' };
+const AL_K = 1.380649e-23;
+
+const alEng = (v) => {
+  v = +v.toPrecision(12); // kills float noise like 0.30000000000000004
+  const a = Math.abs(v);
+  if (!a) return '0';
+  for (const [s, p] of [[1e12, 'T'], [1e9, 'G'], [1e6, 'M'], [1e3, 'k'], [1, ''], [1e-3, 'm'], [1e-6, 'µ'], [1e-9, 'n'], [1e-12, 'p']])
+    if (a >= s * 0.9999) return +(v / s).toPrecision(3) + p;
+  return v.toExponential(1);
+};
+// value + unit. `raw` = the unit already carries its prefix (nH, pF), so no "m" or "k" is added.
+const alFmt = (p, x) => (p.raw ? +x.toPrecision(3) : alEng(x)) + (p.u ? ' ' + p.u : '');
+const alLs = (a, b, n) => Array.from({ length: n }, (_, i) => a * Math.pow(b / a, i / (n - 1)));
+const alLi = (a, b, n) => Array.from({ length: n }, (_, i) => a + ((b - a) * i) / (n - 1));
+const alDb = (v) => 20 * Math.log10(v);
+const alNice = (r) => { const e = Math.pow(10, Math.floor(Math.log10(r))), f = r / e; return (f < 1.5 ? 1 : f < 3 ? 2 : f < 7 ? 5 : 10) * e; };
+
+// Canvas text with real subscripts: "V_GS (V)" draws V, then a small lowered "GS", then " (V)".
+function alTxt(g, s, x, y, align = 'left', size = 11) {
+  const parts = [...s.matchAll(/([^_]+)|_([A-Za-z0-9]+)/g)].map((m) => (m[1] ? { t: m[1] } : { t: m[2], s: 1 }));
+  const font = (p) => `${p.s ? size - 3 : size}px ${AL_FONT}`;
+  const w = (p) => { g.font = font(p); return g.measureText(p.t).width; };
+  const tot = parts.reduce((a, p) => a + w(p), 0);
+  let cx = align === 'center' ? x - tot / 2 : align === 'right' ? x - tot : x;
+  parts.forEach((p) => { g.font = font(p); g.fillText(p.t, cx, y + (p.s ? 3 : 0)); cx += w(p); });
+}
+
+// k < 1 = the curves are drawing in from the left (used when another graph is picked).
+function alPlot(cv, S, o, k = 1) {
+  const d = window.devicePixelRatio || 1, W = cv.clientWidth, H = cv.clientHeight;
+  if (!W || !H) return;
+  const pw = Math.round(W * d), ph = Math.round(H * d);
+  if (cv.width !== pw || cv.height !== ph) { cv.width = pw; cv.height = ph; }  // resize only when the size really changed
+  const g = cv.getContext('2d');
+  g.setTransform(d, 0, 0, d, 0, 0);
+  g.clearRect(0, 0, W, H);
+  const small = W < 420;
+  const M = { l: small ? 46 : 54, r: 12, t: 12, b: 38 }, w = W - M.l - M.r, h = H - M.t - M.b;
+  const T = (v, l) => (l ? Math.log10(Math.max(v, 1e-300)) : v);
+  const xs = S.flatMap((s) => s.x).map((v) => T(v, o.lx));
+  const ys = S.flatMap((s) => s.y).map((v) => T(v, o.ly)).filter(isFinite);
+  let x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  const pad = (y1 - y0 || 1) * 0.06; y0 -= pad; y1 += pad;
+  const X = (v) => M.l + ((v - x0) / (x1 - x0)) * w, Y = (v) => M.t + h - ((v - y0) / (y1 - y0)) * h;
+  const ticks = (a, b, l) => {
+    const r = [];
+    if (l) for (let e = Math.ceil(a); e <= b; e++) r.push(e);
+    else {
+      const s = alNice((b - a) / 5);
+      for (let q = Math.ceil(a / s - 1e-9); q <= Math.floor(b / s + 1e-9); q++) {
+        const t = q * s;
+        r.push(Math.abs(t) < s * 1e-6 ? 0 : +t.toPrecision(10)); // no float noise, tiny values snap to 0
+      }
+    }
+    return r;
+  };
+  g.lineWidth = 1;
+  ticks(x0, x1, o.lx).forEach((v) => {
+    const x = X(v); g.strokeStyle = '#DCE2EB'; g.beginPath(); g.moveTo(x, M.t); g.lineTo(x, M.t + h); g.stroke();
+    g.fillStyle = '#4A5872'; alTxt(g, alEng(o.lx ? Math.pow(10, v) : v), x, H - 22, 'center');
+  });
+  ticks(y0, y1, o.ly).forEach((v) => {
+    const y = Y(v); g.strokeStyle = '#DCE2EB'; g.beginPath(); g.moveTo(M.l, y); g.lineTo(M.l + w, y); g.stroke();
+    g.fillStyle = '#4A5872'; alTxt(g, alEng(o.ly ? Math.pow(10, v) : v), M.l - 6, y + 4, 'right');
+  });
+  g.fillStyle = '#4A5872';
+  alTxt(g, o.xl || '', M.l + w / 2, H - 6, 'center');
+  g.save(); g.translate(12, M.t + h / 2); g.rotate(-Math.PI / 2); alTxt(g, o.yl || '', 0, 0, 'center'); g.restore();
+
+  // curves, clipped to the plot area
+  g.save(); g.beginPath(); g.rect(M.l, M.t - 3, k >= 1 ? w + 3 : w * k, h + 6); g.clip();
+  S.forEach((s) => {
+    g.strokeStyle = s.c; g.globalAlpha = s.a || 1; g.lineWidth = s.w || 2.4; g.lineJoin = 'round'; g.beginPath();
+    s.x.forEach((v, i) => { const px = X(T(v, o.lx)), py = Y(T(s.y[i], o.ly)); if (i) g.lineTo(px, py); else g.moveTo(px, py); });
+    g.stroke();
+  });
+  g.restore(); g.globalAlpha = 1;
+
+  // legend
+  let ly = M.t + 16;
+  S.filter((s) => s.n).forEach((s) => {
+    g.fillStyle = s.c; g.fillRect(M.l + 8, ly - 8, 12, 3);
+    g.fillStyle = '#0F1A2E'; alTxt(g, s.n, M.l + 26, ly - 3); ly += 15;
+  });
+}
+
+/* ---------------------------------- graphs ---------------------------------- */
+const AL_DEMOS = [
+  {
+    id: 'rlc', tab: 'RLC',
+    params: [
+      { k: 'R', l: 'R', a: 100, b: 1000, v: 1000, u: 'Ω' },
+      { k: 'L', l: 'L', a: 1, b: 10, v: 1, raw: 1, u: 'nH' },
+      { k: 'C', l: 'C', a: 1, b: 10, v: 1, raw: 1, u: 'pF' },
+    ],
+    mode: { init: 'par', opts: [{ id: 'par', label: 'Parallel RLC' }, { id: 'ser', label: 'Series RLC' }], on: { par: { R: 1000 }, ser: { R: 10 } } },
+    calc: (v) => {
+      const par = v.mode === 'par', L = v.L * 1e-9, C = v.C * 1e-12, f0 = 1 / (2 * Math.PI * Math.sqrt(L * C)), f = alLs(f0 / 4, f0 * 4, 320);
+      const z = (fr, r) => { const w = 2 * Math.PI * fr; return par ? 1 / Math.hypot(1 / r, w * C - 1 / (w * L)) : Math.hypot(r, w * L - 1 / (w * C)); };
+      const Q = par ? v.R * Math.sqrt(C / L) : Math.sqrt(L / C) / v.R;
+      return {
+        S: [
+          { x: f, y: f.map((x) => z(x, v.R * 2)), c: AL.m, a: 0.5, w: 1.2 },
+          { x: f, y: f.map((x) => z(x, v.R / 2)), c: AL.m, a: 0.5, w: 1.2 },
+          { x: f, y: f.map((x) => z(x, v.R)), c: AL.a, n: par ? 'Parallel |Z|' : 'Series |Z|' },
+        ],
+        o: { lx: 1, ly: 1, xl: 'Frequency (Hz)', yl: '|Z| (Ω)' },
+        out: [[<>f<sub>0</sub></>, alEng(f0) + 'Hz'], ['Q', Q.toFixed(1)], [<>BW = f<sub>0</sub>/Q</>, alEng(f0 / Q) + 'Hz'], [par ? <>Z<sub>max</sub></> : <>Z<sub>min</sub></>, alEng(v.R) + 'Ω']],
+      };
+    },
+    note: <>Lab 00 report (L = 1 nH, C = 1 pF, parallel R = 1 kΩ): f<sub>0</sub> 5.018 GHz, Q 30.1, BW 166 MHz from simulation, against 5.03 GHz, 31.6 and 159 MHz by hand. The faint curves are the R sweep (×½ and ×2).</>,
+  },
+  {
+    id: 'mos', tab: 'MOSFET',
+    params: [
+      { k: 'Vc', l: 'Velocity-saturation voltage (short channel)', a: 0.8, b: 10, v: 2.1, log: 1, u: 'V', raw: 1 },
+      { k: 'Vt', l: <>V<sub>TH</sub></>, a: 0.3, b: 0.7, v: 0.45, u: 'V', raw: 1 },
+    ],
+    mode: { init: 'idvgs', opts: [{ id: 'idvgs', label: <>I<sub>D</sub> vs V<sub>GS</sub></> }, { id: 'gm', label: <>g<sub>m</sub> vs V<sub>GS</sub></> }, { id: 'idvds', label: <>I<sub>D</sub> vs V<sub>DS</sub></> }], on: {} },
+    calc: (v) => {
+      const kp = 184e-6, WL = 15;
+      const id = (vg, vd, sh) => { const vo = vg - v.Vt; if (vo <= 0) return 0; const gf = sh ? 1 / (1 + vo / v.Vc) : 1, t = Math.min(vd, vo); return kp * WL * gf * (vo * t - (t * t) / 2) * (1 + (sh ? 0.1 : 0.02) * vd); };
+      const gm = (vg, vd, sh) => (id(vg + 1e-3, vd, sh) - id(vg - 1e-3, vd, sh)) / 2e-3;
+      const x = alLi(0, 1.8, 200);
+      const fn = { idvgs: (t, s) => id(t, 1.8, s) * 1e3, gm: (t, s) => gm(t, 1.8, s) * 1e3, idvds: (t, s) => id(v.Vt + 0.5, t, s) * 1e3 }[v.mode];
+      const a = id(1.8, 1.8, 0), b = id(1.8, 1.8, 1);
+      return {
+        S: [{ x, y: x.map((t) => fn(t, 0)), c: AL.a, n: 'Long channel' }, { x, y: x.map((t) => fn(t, 1)), c: AL.b, n: 'Short channel' }],
+        o: { xl: v.mode === 'idvds' ? 'V_DS (V)   [V_GS = V_TH + 0.5 V]' : 'V_GS (V)', yl: v.mode === 'gm' ? 'g_m (mS)' : 'I_D (mA)' },
+        out: [[<>I<sub>D</sub> long</>, (a * 1e3).toFixed(2) + ' mA'], [<>I<sub>D</sub> short</>, (b * 1e3).toFixed(2) + ' mA'], ['Long / short', (a / b).toFixed(2)]],
+      };
+    },
+    note: <>Lab 01 report: long channel (W/L = 15, L = 2 µm) gives about 2.6 mA, short channel (L = 200 nm) about 1.8 mA at V<sub>GS</sub> = V<sub>DS</sub> = 1.8 V. A lower velocity-saturation voltage bends the curve toward linear and flattens g<sub>m</sub>.</>,
+  },
+  {
+    id: 'cas', tab: 'CS vs Cascode',
+    params: [{ k: 'CL', l: <>Load C<sub>L</sub> (gain mode only)</>, a: 0.2, b: 10, v: 1, log: 1, u: 'pF', raw: 1 }],
+    mode: { init: 'gain', opts: [{ id: 'gain', label: 'Cascode for gain' }, { id: 'bw', label: 'Cascode for bandwidth' }], on: {} },
+    calc: (v) => {
+      const g = v.mode === 'gain', A = g ? [72.34, 2111] : [7.8, 8.523], B = g ? [1.094e6 / v.CL, 35.89e3 / v.CL] : [0.922e6, 2.68e6], f = alLs(1e3, 1e9, 300);
+      const h = (i) => f.map((x) => alDb(A[i] / Math.hypot(1, x / B[i])));
+      return {
+        S: [{ x: f, y: h(0), c: AL.a, n: 'Common source' }, { x: f, y: h(1), c: AL.b, n: g ? 'Cascode (gain)' : 'Cascode (BW)' }],
+        o: { lx: 1, xl: 'Frequency (Hz)', yl: 'Gain (dB)' },
+        out: [
+          ['CS gain', `${alDb(A[0]).toFixed(1)} dB`],
+          ['CS BW', `${alEng(B[0])}Hz`],
+          ['Cascode gain', `${alDb(A[1]).toFixed(1)} dB`],
+          ['Cascode BW', `${alEng(B[1])}Hz`],
+          ['GBW, CS', `${alEng(A[0] * B[0])}Hz`],
+          ['GBW, cascode', `${alEng(A[1] * B[1])}Hz`],
+        ],
+      };
+    },
+    note: <>Lab 03 simulation: common source 72.3 (37.2 dB) with BW 1.09 MHz, cascode 2111 (66.5 dB) with BW 35.9 kHz. Higher R<sub>out</sub> raises the gain and lowers the BW, so GBW stays near 76 to 79 MHz.</>,
+  },
+  {
+    id: 'fb', tab: 'Feedback',
+    params: [
+      { k: 'A', l: <>Open-loop gain A<sub>ol</sub></>, a: 5, b: 300, v: 50, log: 1, raw: 1 },
+      { k: 'r', l: <>C<sub>IN</sub> / C<sub>F</sub></>, a: 0, b: 10, v: 1, raw: 1 },
+      { k: 'd', l: <>A<sub>ol</sub> drift (temperature, process)</>, a: -30, b: 30, v: 16.6, u: '%', raw: 1 },
+    ],
+    calc: (v) => {
+      const b = 1 / (1 + v.r), BW = 1e5, f = alLs(1e3, 1e9, 300), LG = v.A * b, Acl = v.A / (1 + LG), A2 = v.A * (1 + v.d / 100), Acl2 = A2 / (1 + A2 * b);
+      return {
+        S: [
+          { x: f, y: f.map((x) => alDb(v.A / Math.hypot(1, x / BW))), c: AL.m, n: 'Open loop' },
+          { x: f, y: f.map((x) => alDb(LG / Math.hypot(1, x / BW))), c: AL.b, n: 'Loop gain' },
+          { x: f, y: f.map((x) => alDb(v.A / Math.hypot(1 + LG, x / BW))), c: AL.a, n: 'Closed loop' },
+        ],
+        o: { lx: 1, xl: 'Frequency (Hz)', yl: 'Magnitude (dB)' },
+        out: [
+          [<>A<sub>cl</sub></>, `${Acl.toFixed(2)} (${alDb(Acl).toFixed(1)} dB)`], [<>BW<sub>cl</sub></>, alEng((1 + LG) * BW) + 'Hz'], ['DC loop gain', LG.toFixed(1)],
+          [<>A<sub>ol</sub> drift → A<sub>cl</sub> change</>, `${v.d.toFixed(1)} % → ${((Acl2 / Acl - 1) * 100).toFixed(2)} %`],
+        ],
+      };
+    },
+    note: <>Lab 08 report (A<sub>ol</sub> = 50, BW<sub>ol</sub> = 100 kHz, C<sub>IN</sub>/C<sub>F</sub> = 1): A<sub>cl</sub> = 2 (6 dB), BW<sub>cl</sub> = 2.6 MHz. Over temperature the loop gain moved 16.6 % while the closed-loop gain moved only 0.73 %.</>,
+  },
+  {
+    id: 'noise', tab: 'Noise',
+    params: [
+      { k: 'R', l: 'R', a: 100, b: 1e6, v: 1e3, log: 1, u: 'Ω' },
+      { k: 'C', l: 'C', a: 0.1, b: 20, v: 1, log: 1, u: 'pF', raw: 1 },
+      { k: 'fk', l: 'Flicker corner', a: 1e4, b: 3e7, v: 1.65e6, log: 1, u: 'Hz' },
+    ],
+    calc: (v) => {
+      const C = v.C * 1e-12, T = 300, fc = 1 / (2 * Math.PI * v.R * C), th = (f) => (4 * AL_K * T * v.R) / (1 + (f / fc) ** 2), fl = (f) => th(f) * (1 + v.fk / f), f = alLs(10, 1e11, 300);
+      const FH = 1e13, kTR4 = 4 * AL_K * T * v.R;  // closed-form integral of the same thermal + flicker density (no 3000-point loop)
+      const rmsFl = Math.sqrt(kTR4 * fc * (Math.atan(FH / fc) - Math.atan(1 / fc)) + kTR4 * v.fk * (Math.log(FH) - 0.5 * Math.log(1 + (FH / fc) ** 2) + 0.5 * Math.log(1 + 1 / (fc * fc))));
+      return {
+        S: [{ x: f, y: f.map((x) => Math.sqrt(fl(x)) * 1e9), c: AL.b, n: 'Thermal + flicker' }, { x: f, y: f.map((x) => Math.sqrt(th(x)) * 1e9), c: AL.a, n: 'Thermal only' }],
+        o: { lx: 1, ly: 1, xl: 'Frequency (Hz)', yl: 'Output noise (nV/√Hz)' },
+        out: [
+          ['Thermal density', (Math.sqrt(4 * AL_K * T * v.R) * 1e9).toFixed(2) + ' nV/√Hz'], [<>f<sub>c</sub></>, alEng(fc) + 'Hz'],
+          [<>rms thermal, √(kT/C)</>, (Math.sqrt((AL_K * T) / C) * 1e6).toFixed(1) + ' µV'], ['rms with flicker', (rmsFl * 1e6).toFixed(1) + ' µV'],
+        ],
+      };
+    },
+    note: <>Lab 10 report (R = 1 kΩ, C = 1 pF): 4.07 nV/√Hz, BW 159 MHz, 64.3 µV<sub>rms</sub> against 4 nV/√Hz and 64 µV by hand. The five-transistor OTA flicker corner was about 1.65 MHz. Try R: the thermal rms stays put.</>,
+  },
+];
+const AL_ITEMS = AL_DEMOS.map((d) => ({ id: d.id, label: d.tab, }));
+const alInit = () => Object.fromEntries(AL_DEMOS.map((d) => [d.id, { ...(d.mode ? { mode: d.mode.init } : {}), ...Object.fromEntries(d.params.map((p) => [p.k, p.v])) }]));
+const alVal = (p, pos) => (p.log ? p.a * Math.pow(p.b / p.a, pos / 1000) : p.a + ((p.b - p.a) * pos) / 1000);
+const alPos = (p, v) => (p.log ? (1000 * Math.log(v / p.a)) / Math.log(p.b / p.a) : (1000 * (v - p.a)) / (p.b - p.a));
+
+// Blend two plots of the same shape for the morph. Log axes are blended in log space.
+const alMix = (A, B, o, e) => B.map((sb, i) => {
+  const sa = A[i];
+  const mx = (p, q, lg) => (lg
+    ? Math.pow(10, Math.log10(Math.max(p, 1e-300)) * (1 - e) + Math.log10(Math.max(q, 1e-300)) * e)
+    : p + (q - p) * e);
+  return { ...sb, x: sb.x.map((q, j) => mx(sa.x[j], q, o.lx)), y: sb.y.map((q, j) => mx(sa.y[j], q, o.ly)) };
+});
+const alCompat = (a, b) => a.S.length === b.S.length
+  && a.S.every((s, i) => s.x.length === b.S[i].x.length)
+  && !!a.o.lx === !!b.o.lx && !!a.o.ly === !!b.o.ly;
+
+function AnalogLab({ onBack }) {
+  const [id, setId] = useState('rlc');
+  const [vals, setVals] = useState(alInit);
+  const d = AL_DEMOS.find((x) => x.id === id), v = vals[id];
+  const res = useMemo(() => d.calc(v), [d, v]);   // readouts only (instant, like the other pages)
+  const cv = useRef(null);
+  const live = useRef({ id, vals });
+  live.current = { id, vals };                    // the loop below always reads the latest slider values
+
+  // One persistent animation loop, same idea as the Scope on the Labs and Projects pages.
+  useEffect(() => {
+    const c = cv.current;
+    if (!c) return undefined;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const st = { key: null, cid: null, shown: {}, anim: null, prev: null, size: '', t: performance.now(), dirty: true };
+    let raf = 0;
+
+    const frame = (now) => {
+      raf = requestAnimationFrame(frame);
+      const dt = Math.min(0.05, (now - st.t) / 1000); st.t = now;
+      const { id: cid, vals: all } = live.current;
+      const dm = AL_DEMOS.find((x) => x.id === cid), tv = all[cid];
+      const key = `${cid}:${tv.mode || ''}`;
+
+      let moving = false;
+      if (key !== st.key) {
+        // another graph (draw in from the left) or another mode (curve morphs)
+        st.anim = st.key && st.prev && !reduce ? { t0: now, morph: st.cid === cid } : null;
+        st.key = key; st.cid = cid; st.dirty = true;
+        st.shown = Object.fromEntries(dm.params.map((p) => [p.k, alPos(p, tv[p.k])]));
+      } else {
+        dm.params.forEach((p) => {
+        const target = alPos(p, tv[p.k]);
+        if (Math.abs(target - st.shown[p.k]) > 0.0005) { st.shown[p.k] = target; moving = true; }
+      });
+      }
+
+      const size = `${c.clientWidth}x${c.clientHeight}x${window.devicePixelRatio || 1}`;
+      if (size !== st.size) { st.size = size; st.dirty = true; }
+      if (!moving && !st.anim && !st.dirty) return;   // nothing changed, skip the frame
+
+      const cur = { ...(tv.mode ? { mode: tv.mode } : {}), ...Object.fromEntries(dm.params.map((p) => [p.k, alVal(p, st.shown[p.k])])) };
+      const r = dm.calc(cur);
+
+      if (st.anim) {
+        const morph = st.anim.morph && alCompat(st.prev, r);
+        const k = Math.min(1, (now - st.anim.t0) / (st.anim.morph ? 650 : 800)), e = 1 - Math.pow(1 - k, 3);
+        if (morph) alPlot(c, alMix(st.prev.S, r.S, r.o, e), r.o);
+        else alPlot(c, r.S, r.o, e);
+        if (k >= 1) st.anim = null;
+      } else alPlot(c, r.S, r.o);
+
+      if (!st.anim) st.prev = r;
+      else if (!st.prev) st.prev = r;
+      st.dirty = false;
+    };
+
+    raf = requestAnimationFrame(frame);
+    document.fonts?.ready.then(() => { st.dirty = true; });
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  const set = (k, val) => setVals((s) => ({ ...s, [id]: { ...s[id], [k]: val } }));
+  const setMode = (m) => {
+    if (m === v.mode) return;
+    setVals((s) => ({ ...s, [id]: { ...s[id], mode: m, ...(d.mode.on[m] || {}) } }));
+  };
+  const pick = (x) => { if (x !== id) setId(x); };
+
+  return (
+    <>
+      <header className="intro intro--solo wrap">
+        <div className="intro__text">
+          <h1>Interactive graphs</h1>
+          <p>The lab results from my reports, live. Pick a graph, then move the sliders and watch the trade-off change.</p>
+          <p>Every curve and number is computed from the same formulas I used in the hand analysis.</p>
+          <div className="intro__btns">
+            <button className="btn" onClick={onBack}>Back to the site</button>
+          </div>
+          <Contact labels />
+          <a className="btn btn--sm intro__repo" href={REPO} target="_blank" rel="noreferrer">View the repo on GitHub</a>
+        </div>
+      </header>
+
+      <section className="wrap lg">
+        <Tabs variant="inline" label="Choose a graph" items={AL_ITEMS} value={id} onChange={pick} />
+
+        <div className="lg__card">
+          {d.mode && (
+            <div className="lg__mode">
+              <Tabs key={id} variant="mini" label="Mode" items={d.mode.opts} value={v.mode} onChange={setMode} />
+            </div>
+          )}
+
+          {/* Canvas size is set inline, so it can never grow or collapse even if the CSS is missing. */}
+          <div style={{ position: 'relative', height: 'clamp(230px, 62vw, 320px)' }}>
+            <canvas ref={cv} aria-label={`${d.tab} interactive graph`}
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'block' }} />
+          </div>
+
+          <div className="lg__low" key={id}>
+            <ul className="lg__out">
+              {res.out.map(([k, val], i) => <li key={i}><small>{k}</small><b>{val}</b></li>)}
+            </ul>
+            <div className="lg__bars">
+              {d.params.map((p) => (
+                <label key={p.k} className="lg__bar">
+                  <span><em className="lg__lab">{p.l}</em><b>{alFmt(p, v[p.k])}</b></span>
+                  <input type="range" min="0" max="1000" step="any" value={alPos(p, v[p.k])} onChange={(e) => set(p.k, alVal(p, +e.target.value))} />
+                </label>
+              ))}
+            </div>
+            <p className="lg__note">{d.note}</p>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
 
@@ -609,7 +953,7 @@ function matchLab(l, q) {
 function Labs({ go }) {
   const [cat, setCat] = useState('all');
   const [q, setQ] = useState('');
-  const [open, setOpen] = useState('05');
+  const [open, setOpen] = useState(null);
   const list = LABS.filter((l) => (cat === 'all' || l.cat === cat) && matchLab(l, q));
   const pick = (k) => { setCat(k); setOpen(null); };
   return (
@@ -821,6 +1165,11 @@ export default function App() {
   // history never fills up with "#" steps.
   const [page, setPage] = useState('projects');
   const [ping, setPing] = useState(0);
+  const last = useRef('projects');
+  const openGraphs = () => {
+    setPing((n) => n + 1);
+    if (page !== 'graphs') { last.current = page; setPage('graphs'); }
+  };
 
   useEffect(() => {
     if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual';
@@ -850,9 +1199,9 @@ export default function App() {
   return (
     <OverlayProvider>
       <div className="progress" aria-hidden="true" />
-      <nav className="nav">
+      <nav className={`nav ${page === 'graphs' ? 'nav--lab' : ''}`}>
         <div className="nav__in">
-          <button className="brand" onClick={() => setPing((n) => n + 1)} aria-label="Signal logo">
+          <button className="brand" onClick={openGraphs} aria-label="Signal logo">
             <svg viewBox="0 0 40 24" width="34" height="20" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinejoin="round">
               <path key={ping} className={ping ? 'brand__wave' : ''} pathLength="1" d="M1 12 Q6 -2 11 12 T21 12 T31 12 L39 12" />
             </svg>
@@ -867,6 +1216,7 @@ export default function App() {
         {page === 'labs' && <Labs go={setPage} />}
         {page === 'projects' && <Projects go={setPage} />}
         {page === 'challenges' && <Challenges go={setPage} />}
+        {page === 'graphs' && <AnalogLab onBack={() => setPage(last.current)} />}
       </main>
 
       <About />
